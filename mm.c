@@ -210,7 +210,7 @@ void *
 mm_realloc(void *ptr, size_t size)
 {	
 	size_t oldsize,newsize;
-	void *newptr;
+	void *newptr = malloc(size);
 
 	//If size is negative it means nothing, just return NULL
 	if((int)size < 0) 
@@ -218,13 +218,13 @@ mm_realloc(void *ptr, size_t size)
 
 	/* If size == 0 then this is just free, and we return NULL. */
 	if (size == 0) {
-		mm_free(ptr);
+		free(ptr);
 		return (NULL);
 	}
 
 	/* If oldptr is NULL, then this is just malloc. */
 	if (ptr == NULL)
-		return (mm_malloc(size));
+		return (malloc(size));
 
 	oldsize=GET_SIZE(HDRP(ptr));
 	newsize = size + (2 * WSIZE);					// newsize after adding header and footer to asked size
@@ -267,7 +267,7 @@ mm_realloc(void *ptr, size_t size)
 		}
 		//finding new size elsewhere in free_list and copy old data to new place
 		else{
-			newptr=mm_malloc(newsize);
+			newptr=malloc(newsize);
 			
 			/* If realloc() fails the original block is left untouched  */
 			if (newptr == NULL)
@@ -275,7 +275,7 @@ mm_realloc(void *ptr, size_t size)
 
 			place(newptr,newsize);
 			memcpy(newptr,ptr,oldsize);
-			mm_free(ptr);
+			free(ptr);
 			return newptr;
 		}
 	}
